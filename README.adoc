@@ -1,0 +1,89 @@
+:toc: macro
+:toclevels: 5
+:figure-caption!:
+
+= Scrub Rb
+
+toc::[]
+
+== Features
+
+== Requirements
+
+. link:https://www.ruby-lang.org[Ruby].
+
+== Setup
+
+To install _with_ security, run:
+
+[source,bash]
+----
+# 💡 Skip this line if you already have the public certificate installed.
+gem cert --add <(curl --compressed --location https://undefined.io/gems.pem)
+gem install scrub-rb --trust-policy HighSecurity
+----
+
+To install _without_ security, run:
+
+[source,bash]
+----
+gem install scrub-rb
+----
+
+You can also add the gem directly to your project:
+
+[source,bash]
+----
+bundle add scrub-rb
+----
+
+Once the gem is installed, you only need to require it:
+
+[source,ruby]
+----
+require "scrub/rb"
+----
+
+== Usage
+
+== Development
+
+To contribute, run:
+
+[source,bash]
+----
+git clone https://github.com/undefined/scrub-rb
+cd scrub-rb
+bin/setup
+----
+
+You can also use the IRB console for direct access to all objects:
+
+[source,bash]
+----
+bin/console
+----
+
+== Tests
+
+To test, run:
+
+[source,bash]
+----
+bin/rake
+----
+
+== link:https://undefined.io/policies/license[License]
+
+== link:https://undefined.io/policies/security[Security]
+
+== link:https://undefined.io/policies/code_of_conduct[Code of Conduct]
+
+== link:https://undefined.io/policies/contributions[Contributions]
+
+== link:https://undefined.io/projects/scrub-rb/versions[Versions]
+
+== Credits
+
+* Built with link:https://alchemists.io/projects/gemsmith[Gemsmith].
+* Engineered by link:https://undefined.io/team/undefined[Bhanu Prakash].

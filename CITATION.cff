@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: Please use the following metadata when citing this project in your work.
+title: Scrub Rb
+abstract:
+version: 0.0.0
+license: Hippocratic-2.1
+date-released: 2026-01-03
+authors:
+  - family-names: Prakash
+    given-names: Bhanu
+    affiliation: %<organization_label>s
+    orcid: https://orcid.org/
+keywords:
+ - ruby
+repository-code: https://github.com/undefined/scrub-rb
+repository-artifact: https://rubygems.org/gems/scrub-rb
+url: https://undefined.io/projects/scrub-rb
