@@ -1,5 +1,9 @@
 *.gem
 .bundle
 Gemfile.lock
+.rubocop-remote*
+config.yaml
+db_config.yaml
+coverage/
 pkg
 tmp

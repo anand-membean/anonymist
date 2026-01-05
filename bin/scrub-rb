@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
+require "scrub"
+require "optparse"
+require "yaml"
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: scrub-rb [options]"
+
+  opts.on("-c", "--config FILE", "Path to configuration file") do |f|
+    options[:config] = f
+  end
+
+  opts.on("-m", "--mode MODE", [:dump, :live], "Mode: dump (stream processing) or live (db update)") do |m|
+    options[:mode] = m
+  end
+
+  opts.on("-d", "--db-config FILE", "Path to database configuration file (YAML) for live mode") do |f|
+    options[:db_config] = f
+  end
+
+  opts.on("--dry-run", "Simulate live mode without executing updates") do
+    options[:dry_run] = true
+  end
+end.parse!
+
+unless options[:config]
+  puts "Error: Configuration file required (-c)."
+  exit 1
+end
+
+unless options[:mode]
+  puts "Error: Mode required (-m dump|live)."
+  exit 1
+end
+
+config = Scrub::Config.new
+begin
+  config.load_file(options[:config])
+  config.validate!
+rescue => e
+  puts "Error loading configuration: #{e.message}"
+  exit 1
+end
+
+if options[:mode] == :dump
+  processor = Scrub::Processors::Dump.new(config)
+  processor.process($stdin, $stdout)
+elsif options[:mode] == :live
+  unless options[:db_config]
+    puts "Error: Database configuration file required for live mode (-d)."
+    exit 1
+  end
+
+  begin
+    db_config = YAML.load_file(options[:db_config])
+    # Symbolize keys
+    db_config = db_config.transform_keys(&:to_sym)
+  rescue => e
+    puts "Error loading DB configuration: #{e.message}"
+    exit 1
+  end
+
+  processor = Scrub::Processors::Live.new(config, db_config, dry_run: options[:dry_run])
+  processor.run
+end

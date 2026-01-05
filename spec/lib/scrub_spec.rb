@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Scrub::Rb do
+RSpec.describe Scrub do
   describe ".loader" do
     it "eager loads" do
       expectation = proc { described_class.loader.eager_load force: true }

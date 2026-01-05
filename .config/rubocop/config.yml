@@ -1,2 +1,5 @@
-inherit_gem:
-  caliber: config/all.yml
+inherit_from:
+  - "https://www.goodcop.style/base.yml"
+
+AllCops:
+  TargetRubyVersion: "3.3"
