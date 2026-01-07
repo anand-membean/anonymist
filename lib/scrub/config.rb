@@ -4,7 +4,7 @@ require "yaml"
 
 module Scrub
   class Config
-    attr_reader :tables
+    attr_reader :tables, :bloom_filter
     attr_accessor :bloom_filter_options
 
     def initialize
@@ -22,13 +22,23 @@ module Scrub
       end
     end
 
+    def bloom_filter(size:, hashes:)
+      @bloom_filter = { size:, hashes: }
+    end
+
     def table(name, &block)
-      @tables[name.to_s] ||= TableConfig.new(name)
-      block.call(@tables[name.to_s]) if block_given?
-      @tables[name.to_s]
+      puts "==============table #{name}"
+      # @tables[name.to_s] ||= TableConfig.new(name)
+      # block.call(@tables[name.to_s]) if block_given?
+      # @tables[name.to_s]
+
+      table_config = TableConfig.new(name)
+      table_config.instance_eval(&block)
+      @tables[name.to_s] = table_config
     end
 
     def validate!
+      puts ">>>>>>>>>>>>>>>#{@tables}"
       raise ArgumentError, "No tables configured" if @tables.empty?
 
       @tables.each do |name, table|
@@ -73,6 +83,7 @@ module Scrub
     end
 
     private def load_ruby(path)
+      puts "=============2222"
       instance_eval(File.read(path), path)
     end
 

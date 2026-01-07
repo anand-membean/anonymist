@@ -9,11 +9,15 @@ module Scrub
       @columns = {}
     end
 
-    def column(name, type = nil, **options)
-      if type
-        options[:type] = type
-      end
-      @columns[name.to_s] = ColumnConfig.new(name, **options)
+    # def column(name, type = nil, **options)
+    #   if type
+    #     options[:type] = type
+    #   end
+    #   @columns[name.to_s] = ColumnConfig.new(name, **options)
+    # end
+    def column(name, &block)
+      raise ArgumentError, "Block required for column #{name}" unless block
+      @columns[name.to_s] = block
     end
 
     # Returns columns sorted by dependency order

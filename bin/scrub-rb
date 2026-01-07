@@ -15,7 +15,7 @@ OptionParser.new do |opts|
     options[:config] = f
   end
 
-  opts.on("-m", "--mode MODE", [:dump, :live], "Mode: dump (stream processing) or live (db update)") do |m|
+  opts.on("-m", "--mode MODE", [:dump, :live, :anand], "Mode: dump (stream processing) or live (db update)") do |m|
     options[:mode] = m
   end
 
@@ -34,23 +34,36 @@ unless options[:config]
 end
 
 unless options[:mode]
-  puts "Error: Mode required (-m dump|live)."
+  puts "Error: Mode required (-m dump|live|anand)."
   exit 1
 end
 
-config = Scrub::Config.new
-begin
-  config.load_file(options[:config])
-  config.validate!
-rescue => e
-  puts "Error loading configuration: #{e.message}"
-  exit 1
-end
 
 if options[:mode] == :dump
+  config = Scrub::Config.new
+  begin
+    config.load_file(options[:config])
+    puts "========================1111111"
+    config.validate!
+  rescue => e
+    puts "Error loading configuration: #{e.message}"
+    exit 1
+  end
+
   processor = Scrub::Processors::Dump.new(config)
   processor.process($stdin, $stdout)
+
 elsif options[:mode] == :live
+  config = Scrub::Config.new
+  begin
+    config.load_file(options[:config])
+    puts "========================1111111"
+    config.validate!
+  rescue => e
+    puts "Error loading configuration: #{e.message}"
+    exit 1
+  end
+
   unless options[:db_config]
     puts "Error: Database configuration file required for live mode (-d)."
     exit 1
@@ -67,4 +80,31 @@ elsif options[:mode] == :live
 
   processor = Scrub::Processors::Live.new(config, db_config, dry_run: options[:dry_run])
   processor.run
+
+elsif options[:mode] == :anand
+  unless options[:db_config]
+    puts "Error: Database configuration file required for live mode (-d)."
+    exit 1
+  end
+
+  begin
+    db_config = YAML.load_file(options[:db_config])
+    # Symbolize keys
+    db_config = db_config.transform_keys(&:to_sym)
+  rescue => e
+    puts "Error loading DB configuration: #{e.message}"
+    exit 1
+  end
+
+  config = Scrub::Config.new
+  begin
+    config.load_file(options[:config])
+    puts "========================1111111"
+    # config.validate!
+  rescue => e
+    puts "Error loading configuration: #{e.message}"
+    exit 1
+  end
+  # puts "-------------------------#{Scrub.config.inspect}"
+  Scrub::Runner.new(db_config, dry_run: options[:dry_run]).run
 end

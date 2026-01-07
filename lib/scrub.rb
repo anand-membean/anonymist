@@ -23,14 +23,20 @@ module Scrub
 
   class << self
     attr_writer :configuration
+    attr_reader :config
   end
 
   def self.configuration
     @configuration ||= Config.new
   end
 
-  def self.configure
-    yield(configuration)
+  # def self.configure
+  #   yield(configuration)
+  # end
+
+  def self.configure(&block)
+    @config = Config.new
+    @config.instance_eval(&block)
   end
 
   # Scrub a database dump stream.
@@ -48,5 +54,9 @@ module Scrub
   # @param config [Scrub::Config] Configuration object (defaults to global config)
   def self.scrub_live(db_config, config: configuration)
     Processors::Live.new(config, db_config).run
+  end
+
+  def self.scrub_anand(connection)
+    Scrub::Runner.new(connection).run
   end
 end
